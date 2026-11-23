@@ -35,6 +35,12 @@ validated and cached by the daemon) or a neutral glyph. Logos are used to identi
 remain with their respective owners. Full CC0 dedication ships in
 `apps/desktop/ui/public/licenses/simple-icons.txt`.
 
+The engine/provider registry also uses the CC0 marks for Cursor, OpenCode,
+OpenRouter, DeepSeek, Mistral AI, LM Studio and GitHub Copilot. OpenAI's
+blossom is retained from Simple Icons 15.0.0 (CC0), as detailed below.
+See [the dated artwork audit](docs/design/brand-icons.md) for source URLs,
+aliases, and brands deliberately represented by neutral initials.
+
 ## OpenMausBot (Apache-2.0)
 
 `apps/desktop/ui` settings and apps layout ideas are inspired by
@@ -101,6 +107,20 @@ contain both license texts.
 [clap_mangen](https://github.com/clap-rs/clap/tree/master/clap_mangen)
 
 ## Integration identification artwork (v4)
+
+Google Antigravity's one-colour icon comes from the vendor's official
+[press assets](https://antigravity.google/press), specifically
+`https://antigravity.google/assets/image/brand/antigravity-icon__one-color.svg`
+(checked 2026-11-23). It is rescaled from a 180 to a 24 unit viewBox without
+redrawing and bundled inline for integration identification under Google's
+[product compatibility guidance](https://partnermarketinghub.withgoogle.com/brands/google/use-cases/product-co-branding/).
+This is vendor trademark artwork, not CC0. Google Antigravity is a trademark
+of Google LLC. No affiliation or endorsement is implied. Source/provenance:
+`apps/desktop/ui/src/assets/brands/antigravity.svg` and the dated audit above.
+
+Neutral initials for Groq and Together AI contain no vendor artwork. Groq is
+a trademark of Groq LLC and/or its affiliates. Praxi-Bot is not affiliated
+with or endorsed by Groq LLC.
 
 OpenAI's blossom path is vendored from Simple Icons 15.0.0 (CC0):
 https://github.com/simple-icons/simple-icons/blob/15.0.0/icons/openai.svg

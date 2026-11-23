@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { readFileSync, readdirSync } from 'node:fs';
 import { siGithub, siGmail, siLinear, siGooglegemini } from 'simple-icons';
 import { bareBrandColor, brandIcon, hexLuminance } from './brandIcons.ts';
 
@@ -46,16 +47,57 @@ test('bare logos that would vanish on a surface follow the text colour', () => {
   assert.equal(brandIcon('deepseek').known, true);
 });
 
-test('every CLI engine and the Anthropic API provider wear a real logo, never a letter fallback', async () => {
+test('every registered engine and shipped provider has bundled artwork at every lookup boundary', async () => {
   const { brandOf } = await import('./cliCards.ts');
-  const { providerBrand } = await import('./modelBrand.ts');
-  for (const id of ['claude', 'codex', 'opencode', 'agy', 'gemini']) {
-    for (const key of [brandOf(id), providerBrand(`cli:${id}`).company]) {
+  const { providerBrand, productBrandKey } = await import('./modelBrand.ts');
+  const { FALLBACK_CATALOG } = await import('./providerView.ts');
+  const registry = readFileSync(new URL('../../../../../crates/cli-provider/src/registry.rs', import.meta.url), 'utf8');
+  const engines = [...registry.matchAll(/CliEngineSpec\s*\{\s*id:\s*"([^"]+)"/g)].map(m => m[1]);
+  assert.ok(engines.length > 0, 'engine registry must be read, not silently skipped');
+  for (const id of engines) {
+    for (const key of [id, `cli:${id}`, brandOf(id), providerBrand(`cli:${id}`).company, productBrandKey(`cli:${id}`, 'default')]) {
       const b = brandIcon(key);
       assert.equal(b.known, true, `${id} -> ${key}`);
       assert.ok(b.path.length > 0 && b.monogram === '', `${id} -> ${key}`);
+      assert.equal(b.monochrome, true, `${id} -> ${key} must follow theme text`);
+    }
+  }
+  const catalog = new URL('../../../../../providers/catalog/', import.meta.url);
+  const providers = readdirSync(catalog).filter(f => f.endsWith('.toml')).map(f => {
+    const id = /^id\s*=\s*"([^"]+)"/m.exec(readFileSync(new URL(f, catalog), 'utf8'))?.[1];
+    assert.ok(id, `${f} must declare a provider id`);
+    return id;
+  });
+  const localServers = readFileSync(new URL('./localServers.ts', import.meta.url), 'utf8');
+  const localIds = /const KNOWN = new Set\(\[([^\]]+)\]/.exec(localServers)?.[1];
+  assert.ok(localIds, 'local provider inventory must be read');
+  const ids = new Set([...providers, ...FALLBACK_CATALOG, ...localIds.matchAll(/"([^"]+)"/g)].map(id => typeof id === 'string' ? id : id[1]));
+  for (const id of [...ids, 'openai', 'claude-code', 'codex', 'gemini-cli']) {
+    for (const key of [id, providerBrand(id).company, productBrandKey(id, 'default')]) {
+      const b = brandIcon(key);
+      assert.equal(b.known, true, `${id} -> ${key}: add a licensed mark or documented initial`);
+      assert.ok(b.path || /^[A-Z]$/.test(b.monogram), `${id} -> ${key}`);
+      assert.equal(b.monochrome, true, `${id} -> ${key}`);
     }
   }
   assert.equal(brandIcon(providerBrand('claude-code').company).name, 'Claude');
   assert.equal(brandIcon(providerBrand('anthropic').company).name, 'Anthropic');
+});
+
+test('Antigravity uses the official press path rather than an approximation', () => {
+  const svg = readFileSync(new URL('../assets/brands/antigravity.svg', import.meta.url), 'utf8');
+  const path = /\bd="([^"]+)"/.exec(svg)?.[1];
+  assert.ok(path);
+  assert.equal(brandIcon('agy').path, path);
+  assert.deepEqual(brandIcon('cli:agy'), brandIcon('antigravity'));
+});
+
+test('unlicensed brand artwork uses an explicit neutral initial and stays offline', () => {
+  for (const [id, initial] of Object.entries({ groq: 'G', together: 'T', llamacpp: 'L', playwright: 'P', exa: 'E', tavily: 'T', firecrawl: 'F', context7: 'C' })) {
+    const b = brandIcon(id);
+    assert.equal(b.known, true, `${id}: must not trigger AppLogo remote lookup`);
+    assert.equal(b.path, '', id);
+    assert.equal(b.monogram, initial, id);
+    assert.equal(b.monochrome, true, id);
+  }
 });

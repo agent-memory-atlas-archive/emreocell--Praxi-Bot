@@ -20,6 +20,14 @@
   user-select: none;
 }
 
+.mark[data-tone="mono"] {
+  color: var(--color-text);
+}
+
+.mark[data-tone="mono"] > svg {
+  fill: currentColor;
+}
+
 /* Near-black logos read as text on dark themes, near-white ones on light themes. */
 .mark[data-tone="dark"] > svg {
   fill: light-dark(var(--brand-color), var(--color-text));
@@ -32,7 +40,7 @@
 .mono {
   font-weight: var(--font-weight-semibold);
   line-height: 1;
-  color: var(--color-text-muted);
+  color: var(--color-text);
   letter-spacing: 0;
 }
 

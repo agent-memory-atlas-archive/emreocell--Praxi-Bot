@@ -11,7 +11,8 @@ const fetched = new Map<string, Promise<string | null>>();
 /**
  * An app's logo: its bundled brand mark when Praxi ships one; otherwise the logo the daemon
  * fetched, validated and cached (loaded with the app's own credentials, shown from a blob: the
- * window's CSP allows no remote image); otherwise a neutral glyph. Never a letter monogram.
+ * window's CSP allows no remote image); otherwise a neutral glyph. Explicitly bundled
+ * initials are used for brands whose artwork licence has not been confirmed.
  */
 export function AppLogo({ name, slug, size = 26 }: { name: string; slug?: string; size?: number }) {
   const { client } = useDaemon();

@@ -7,32 +7,33 @@ const MULTICOLOR = ["gmail", "googledrive", "googlecalendar", "figma"];
 
 /**
  * A brand logo drawn bare: no tile behind it.  Logos that are nearly black or white turn to the
- * text colour on the theme where they would vanish (`data-tone`).  Decorative: the name is
- * always printed next to it, or given by the surrounding control.
+ * text colour on the theme where they would vanish (`data-tone`). Engine/provider
+ * marks follow the text colour in every theme. The wrapper names the artwork.
  */
 export function BrandMark({ name, size = 16 }: { name: string; size?: number }) {
   const brand = brandIcon(name);
   const key = name.toLowerCase().replace(/[^a-z]/g, "");
   const style = { "--brand-color": brand.color, width: size, height: size } as CSSProperties;
-  const tone = !brand.known ? "mono" : brightness(brand.color) > 200 ? "light" : brightness(brand.color) < 70 ? "dark" : "mid";
+  const tone = brand.monochrome || !brand.known ? "mono" : brightness(brand.color) > 200 ? "light" : brightness(brand.color) < 70 ? "dark" : "mid";
+  const accessible = { role: "img", "aria-label": brand.name };
 
   if (MULTICOLOR.includes(key)) {
     return (
-      <span className={styles.mark} style={style} aria-hidden="true">
+      <span className={styles.mark} style={style} {...accessible}>
         <img src={`/brands/${key}.svg`} alt="" draggable={false} />
       </span>
     );
   }
   if (key === "filesystem") {
     return (
-      <span className={styles.mark} style={{ ...style, color: "var(--color-text-muted)" }} aria-hidden="true">
+      <span className={styles.mark} style={{ ...style, color: "var(--color-text-muted)" }} {...accessible}>
         <FolderOpen />
       </span>
     );
   }
   if (key === "slack") {
     return (
-      <span className={styles.mark} style={style} aria-hidden="true">
+      <span className={styles.mark} style={style} {...accessible}>
         <svg viewBox="0 0 24 24">
           <path fill="#36C5F0" d="M9 2a2 2 0 0 1 2 2v6H7V4a2 2 0 0 1 2-2M2 9a2 2 0 0 1 2-2h2v4H4a2 2 0 0 1-2-2" />
           <path fill="#2EB67D" d="M22 9a2 2 0 0 1-2 2h-6V7h6a2 2 0 0 1 2 2M15 2a2 2 0 0 1 2 2v2h-4V4a2 2 0 0 1 2-2" />
@@ -44,7 +45,7 @@ export function BrandMark({ name, size = 16 }: { name: string; size?: number }) 
   }
   if (brand.path) {
     return (
-      <span className={styles.mark} style={style} data-tone={tone} aria-hidden="true">
+      <span className={styles.mark} style={style} data-tone={tone} {...accessible}>
         <svg viewBox="0 0 24 24">
           <path d={brand.path} />
         </svg>
@@ -52,7 +53,7 @@ export function BrandMark({ name, size = 16 }: { name: string; size?: number }) 
     );
   }
   return (
-    <span className={`${styles.mark} ${styles.mono}`} style={{ ...style, fontSize: Math.round(size * 0.55) }} aria-hidden="true">
+    <span className={`${styles.mark} ${styles.mono}`} style={{ ...style, fontSize: Math.round(size * 0.55) }} {...accessible}>
       {brand.monogram}
     </span>
   );
