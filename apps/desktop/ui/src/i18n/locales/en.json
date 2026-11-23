@@ -1211,6 +1211,10 @@
   },
   "chat": {
     "addCommand": "Add a command or bot",
+    "announce": {
+      "failed": "The bot could not finish this reply.",
+      "replied": "The bot has replied."
+    },
     "approval": {
       "always": "Always",
       "alwaysTool": "Always allow for this bot (this tool)",
@@ -1434,6 +1438,12 @@
       "slow": "Taking longer than usual",
       "started": "Started {{start}}",
       "startedFinished": "Started {{start}} · finished {{end}}",
+      "state": {
+        "done": "Done",
+        "failed": "Failed",
+        "running": "Working",
+        "skipped": "Skipped"
+      },
       "summary": "{{count}} steps · {{what}} · {{duration}}",
       "summaryPlain": "{{count}} steps · {{duration}}",
       "thought": "Thought for {{duration}}",

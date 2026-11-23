@@ -199,9 +199,13 @@ export function parseInline(s: string, depth = 0): Inline[] {
         }
       }
     }
-    if (c === "[") {
-      const close = closeBracket(s, i);
-      if (close > i && s[close + 1] === "(") {
+    // `![alt](url)`: images are never fetched (a remote picture is a tracking pixel);
+    // they become a plain link, labelled with the alt text.
+    const image = c === "!" && s[i + 1] === "[";
+    if (c === "[" || image) {
+      const open = image ? i + 1 : i;
+      const close = closeBracket(s, open);
+      if (close > open && s[close + 1] === "(") {
         let depthP = 0;
         let end = -1;
         for (let j = close + 1; j < s.length; j++) {
@@ -221,7 +225,9 @@ export function parseInline(s: string, depth = 0): Inline[] {
             s.slice(close + 2, end).trim().split(/\s+/)[0] ?? "";
           const href = sanitizeUrl(target.replace(/^<|>$/g, ""));
           flush();
-          const label = nest(s.slice(i + 1, close));
+          const altText = s.slice(open + 1, close).trim();
+          const label =
+            image && altText === "" ? [{ t: "text" as const, text: href ?? "" }] : nest(s.slice(open + 1, close));
           if (href) {
             out.push({ t: "link", href, children: label });
           } else {

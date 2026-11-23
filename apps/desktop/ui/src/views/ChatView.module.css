@@ -821,7 +821,8 @@
 }
 
 /* ---- Polish (c450): folded long messages, calmer hover/press feel ---- */
-.userBubble[data-folded="true"] {
+.userBubble[data-folded="true"],
+.foldBody[data-folded="true"] {
   position: relative;
   max-height: calc(var(--space-6) * 9);
   overflow: hidden;
@@ -993,3 +994,12 @@
 .menuKeys { flex-wrap: wrap; color: var(--color-text-muted); }
 .menuEmpty { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3); color: var(--color-text-muted); font-size: var(--font-size-sm); }
 .menuEmpty svg { flex: none; width: var(--size-icon-sm); height: var(--size-icon-sm); }
+
+/* An answer folds taller than a user bubble: a screenful of reading before "Show more". */
+.foldBody[data-folded="true"] {
+  max-height: calc(var(--space-6) * 14);
+}
+
+.foldBody + .foldToggle {
+  margin-top: var(--space-1);
+}

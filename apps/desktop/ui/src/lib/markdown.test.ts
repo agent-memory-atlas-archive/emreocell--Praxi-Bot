@@ -206,3 +206,25 @@ test("__strong__ is bold, but never inside a word", () => {
   ]);
   assert.deepEqual(parseInline("snake__case__name"), [{ t: "text", text: "snake__case__name" }]);
 });
+
+test("an image becomes a plain link labelled with its alt text and is never an element", () => {
+  const [p] = parseMarkdown("see ![a chart](https://example.com/c.png) now");
+  assert.deepEqual(p, {
+    t: "p",
+    children: [
+      { t: "text", text: "see " },
+      { t: "link", href: "https://example.com/c.png", children: [{ t: "text", text: "a chart" }] },
+      { t: "text", text: " now" }
+    ]
+  });
+});
+
+test("an image without alt text is labelled with its address; an unsafe image keeps only the alt text", () => {
+  const [a] = parseMarkdown("![](https://example.com/c.png)");
+  assert.deepEqual(a, {
+    t: "p",
+    children: [{ t: "link", href: "https://example.com/c.png", children: [{ t: "text", text: "https://example.com/c.png" }] }]
+  });
+  const [b] = parseMarkdown("![logo](javascript:alert(1))");
+  assert.deepEqual(b, { t: "p", children: [{ t: "text", text: "logo" }] });
+});

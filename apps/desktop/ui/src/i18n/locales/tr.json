@@ -1211,6 +1211,10 @@
   },
   "chat": {
     "addCommand": "Komut veya bot ekle",
+    "announce": {
+      "failed": "Bot bu yanıtı tamamlayamadı.",
+      "replied": "Bot yanıtladı."
+    },
     "approval": {
       "always": "Her zaman",
       "alwaysTool": "Bu bot için her zaman izin ver (bu araç)",
@@ -1434,6 +1438,12 @@
       "slow": "Normalden uzun sürüyor",
       "started": "Başlangıç {{start}}",
       "startedFinished": "Başlangıç {{start}} · bitiş {{end}}",
+      "state": {
+        "done": "Bitti",
+        "failed": "Başarısız",
+        "running": "Çalışıyor",
+        "skipped": "Atlandı"
+      },
       "summary": "{{count}} adım · {{what}} · {{duration}}",
       "summaryPlain": "{{count}} adım · {{duration}}",
       "thought": "{{duration}} düşündü",

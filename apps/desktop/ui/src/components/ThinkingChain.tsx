@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, Globe } from "lucide-react";
+import { Check, ChevronDown, ChevronRight, Globe, Loader2, Minus, X } from "lucide-react";
 import { type ReactNode, useEffect, useId, useState } from "react";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
@@ -7,6 +7,8 @@ import { formatClock, formatStamp, formatStepDuration, type MessageTimes } from 
 import { type Chain, chainSeconds, type ChainStep } from "../lib/thinkingChain";
 import { buildRows, chainSummary, collapsedRows, type ChainRow } from "../lib/chainRows";
 import { isInFlight, isOrphanStep, isSlowStep } from "../lib/stepStuck";
+import { showStepDuration, type StepState, stepState } from "../lib/stepState";
+import { humanToolError } from "../lib/humanError";
 import { describeTool, stepPhase } from "../lib/toolLabels";
 import type { ToolItem } from "../state/timeline";
 import { ToolBody } from "./ChatCards";
@@ -46,6 +48,25 @@ function stepMs(tool: ToolItem): number | undefined {
   return tool.completedMs !== undefined ? tool.completedMs - tool.requestedMs : undefined;
 }
 
+const STATE_GLYPH = { running: Loader2, done: Check, failed: X, skipped: Minus } as const;
+
+/** One small, consistent mark for the step's state (the words stay in the label). */
+function StateMark({ state }: { state: StepState }) {
+  const { t } = useTranslation();
+  const Glyph = STATE_GLYPH[state];
+  return (
+    <span
+      className={[styles.state, styles[`state_${state}`]].join(" ")}
+      role="img"
+      aria-label={t(`chat.chain.state.${state}`)}
+      data-testid="step-state"
+      data-state={state}
+    >
+      <Glyph aria-hidden="true" />
+    </span>
+  );
+}
+
 function ToolStep({ tool, times, live }: { tool: ToolItem; times: MessageTimes; live: boolean }) {
   const { t, i18n } = useTranslation();
   const ms = stepMs(tool);
@@ -68,6 +89,7 @@ function ToolStep({ tool, times, live }: { tool: ToolItem; times: MessageTimes; 
     tool.status === "error" ||
     tool.status === "denied" ||
     tool.status === "expired";
+  const state = stepState(tool.status, orphan);
   const phase = orphan ? "failed" : stepPhase(tool.status);
   const text = t(`${label.key}.${phase}`, label.values);
   return (
@@ -81,6 +103,7 @@ function ToolStep({ tool, times, live }: { tool: ToolItem; times: MessageTimes; 
       <StepIcon icon={label.icon} brand={label.brand} size={17} />
       <div className={styles.stepMain}>
         <div className={styles.stepLine}>
+          <StateMark state={state} />
           <b className={active ? styles.shim : styles.stepLabel}>{text}</b>
           {bad ? (
             <span className={styles.stepStatus}>
@@ -110,7 +133,7 @@ function ToolStep({ tool, times, live }: { tool: ToolItem; times: MessageTimes; 
               data-testid="step-time"
             >
               {clock}
-              {ms !== undefined && !active
+              {ms !== undefined && showStepDuration(ms, state)
                 ? ` · ${formatStepDuration(ms, i18n.language, {
                     s: t("chat.duration.shortSeconds"),
                     m: t("chat.duration.shortMinutes")
@@ -128,6 +151,11 @@ function ToolStep({ tool, times, live }: { tool: ToolItem; times: MessageTimes; 
               </span>
             ))}
           </div>
+        ) : null}
+        {state === "failed" && tool.error && !open ? (
+          <p className={styles.stepError} data-testid="step-error">
+            {humanToolError(tool.error).title}
+          </p>
         ) : null}
         {open ? (
           <div id={panelId} className={styles.detail}>

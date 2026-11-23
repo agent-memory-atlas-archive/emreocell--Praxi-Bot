@@ -285,3 +285,49 @@
 }
 .head, .thought, .stepTime, .more { color: var(--on-wallpaper-muted); }
 .head:hover, .step:hover, .step:focus-within { background-color: var(--on-wallpaper-hover); }
+
+/* ---- Step states (c593): one small mark per step ---- */
+.state {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+  color: var(--color-text-faint);
+}
+
+.state > svg {
+  width: 100%;
+  height: 100%;
+}
+
+.state_running {
+  color: var(--color-accent-text);
+}
+
+.state_running > svg {
+  animation: stepSpin 1s linear infinite;
+}
+
+.state_failed {
+  color: var(--color-danger);
+}
+
+.stepError {
+  margin: var(--space-1) var(--space-0) var(--space-0);
+  color: var(--color-danger);
+  font-size: var(--font-size-xs);
+  overflow-wrap: anywhere;
+}
+
+@keyframes stepSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .state_running > svg {
+    animation: none;
+  }
+}

@@ -1211,6 +1211,10 @@
   },
   "chat": {
     "addCommand": "Befehl oder Bot hinzufügen",
+    "announce": {
+      "failed": "Der Bot konnte diese Antwort nicht abschließen.",
+      "replied": "Der Bot hat geantwortet."
+    },
     "approval": {
       "always": "Immer",
       "alwaysTool": "Für diesen Bot immer erlauben (dieses Werkzeug)",
@@ -1434,6 +1438,12 @@
       "slow": "Dauert länger als üblich",
       "started": "Gestartet {{start}}",
       "startedFinished": "Gestartet {{start}} · beendet {{end}}",
+      "state": {
+        "done": "Fertig",
+        "failed": "Fehlgeschlagen",
+        "running": "Arbeitet",
+        "skipped": "Übersprungen"
+      },
       "summary": "{{count}} Schritte · {{what}} · {{duration}}",
       "summaryPlain": "{{count}} Schritte · {{duration}}",
       "thought": "Nachgedacht: {{duration}}",
