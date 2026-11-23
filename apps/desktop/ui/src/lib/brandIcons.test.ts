@@ -99,5 +99,6 @@ test('unlicensed brand artwork uses an explicit neutral initial and stays offlin
     assert.equal(b.path, '', id);
     assert.equal(b.monogram, initial, id);
     assert.equal(b.monochrome, true, id);
+    assert.deepEqual(brandIcon(b.name), b, `${id}: display name must resolve to the same bundled initial`);
   }
 });

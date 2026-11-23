@@ -10,6 +10,7 @@ const aliases: Record<string, string> = {
   cligemini: 'googlegemini',
   geminiopenaicompat: 'googlegemini',
   mistral: 'mistralai',
+  togetherai: 'together',
   clicursor: 'cursor',
   cursoragent: 'cursor',
   claudecode: 'claude',

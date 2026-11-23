@@ -51,7 +51,7 @@ not trademark ownership.
 | OpenRouter: `openrouter` | Real mark | SI `openrouter.svg`, retained | CC0 1.0 |
 | Mistral: `mistral`, `mistralai` | Raw provider fell back; maker prefix had real mark | SI `mistralai.svg`; alias fixed | CC0 1.0 |
 | Groq: `groq` | Generic two-letter fallback | Neutral **G**; [trademark policy](https://groq.com/trademark-policy) | Policy limits nominative use to words; UI logos need permission |
-| Together AI: `together` | Generic two-letter fallback | Neutral **T**; [brand](https://www.together.ai/brand), [terms](https://www.together.ai/terms-of-service) | No clear grant; terms require written consent |
+| Together AI: `together`, `Together AI` | Generic two-letter fallback | Neutral **T**; [brand](https://www.together.ai/brand), [terms](https://www.together.ai/terms-of-service) | No clear grant; terms require written consent |
 | llama.cpp: `llamacpp` (detected local server) | Generic two-letter fallback | Neutral **L**; [upstream](https://github.com/ggml-org/llama.cpp) | MIT code; no separate mark grant established |
 
 Antigravity is absent from the installed SI release. Google's
