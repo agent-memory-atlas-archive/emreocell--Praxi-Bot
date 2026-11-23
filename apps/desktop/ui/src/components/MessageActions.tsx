@@ -32,13 +32,13 @@ export function MessageActions({
     <div className={`${styles.row} ${side === "me" ? styles.rowUser : styles.rowBot}`}>
       {side === "me" ? (
         <>
-          {meta}
           {group}
+          {meta}
         </>
       ) : (
         <>
-          {group}
           {meta}
+          {group}
         </>
       )}
     </div>

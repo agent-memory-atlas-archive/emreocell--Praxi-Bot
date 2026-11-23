@@ -493,6 +493,7 @@
 
 .box {
   position: relative;
+  cursor: text;
   padding: var(--space-3) var(--space-3) var(--space-2) var(--space-4);
   border: var(--size-border) solid var(--color-border);
   border-radius: calc(var(--radius-modal) * 1.25);
@@ -523,8 +524,10 @@
 
 .input {
   display: block;
+  box-sizing: border-box;
   width: 100%;
   min-height: var(--space-6);
+  cursor: text;
   max-height: calc(var(--space-16) * 2);
   padding: var(--space-0);
   border: none;

@@ -1,0 +1,52 @@
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--space-1) * 0.5);
+  min-height: var(--size-info-button);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--space-6);
+  height: var(--space-6);
+  padding: var(--space-0);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition:
+    color var(--motion-duration-fast) var(--motion-easing-standard),
+    background-color var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+.icon:hover:not(:disabled),
+.icon:focus-visible {
+  background-color: var(--color-surface-active);
+  color: var(--color-text);
+}
+
+.icon:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.icon:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.icon > svg {
+  width: calc(var(--space-1) * 4);
+  height: calc(var(--space-1) * 4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon {
+    transition: none;
+  }
+}

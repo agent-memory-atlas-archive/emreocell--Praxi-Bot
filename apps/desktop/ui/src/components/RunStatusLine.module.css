@@ -80,7 +80,7 @@
 }
 
 .time {
-  margin-left: auto;
+  flex: none;
   color: var(--on-wallpaper-muted);
   font-family: var(--font-mono);
   font-size: var(--font-size-caption);

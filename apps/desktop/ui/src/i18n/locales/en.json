@@ -1574,7 +1574,7 @@
     "pendingElsewhere": "From another chat of this bot: {{chat}}",
     "pendingPinned": "Waiting for your decision. The card is above the message box.",
     "placeholder": "Message…  / commands · @ bots",
-    "placeholderBusy": "The bot is working. Type to queue a message…",
+    "placeholderBusy": "The bot is working. Typing queues your message",
     "placeholderWaiting": "Waiting for your approval. A message you type is queued…",
     "question": {
       "answer": "Answer",
@@ -1610,6 +1610,7 @@
       "toolHint": "Tool hint",
       "workflow": "Workflow: {{name}} (0 LLM calls)"
     },
+    "runActions": "Actions for the latest answer",
     "runBar": {
       "elapsed": "Running for {{time}}",
       "forceStop": "Force stop",

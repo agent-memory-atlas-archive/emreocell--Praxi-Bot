@@ -68,7 +68,9 @@ import { useVoiceCall } from "../components/voiceCall/useVoiceCall";
 import { VoiceCallPanel } from "../components/voiceCall/VoiceCallPanel";
 import { MessageInfo } from "../components/MessageInfo";
 import { MessageActions } from "../components/MessageActions";
-import { EditMessage, RegenerateRow, SupersededView } from "../components/ResendTurn";
+import { composerPlaceholderKey, shouldFocusOnBoxClick, shouldTypeToFocus } from "../lib/composerFocus";
+import { EditMessage, RegenerateAction, RegenerateRow, SupersededView } from "../components/ResendTurn";
+import { IconAction, RunActionBar } from "../components/RunActionBar";
 import { CopyButton } from "../components/CopyButton";
 import { useAutoSpeak } from "../components/useAutoSpeak";
 import { SpeakButton } from "../components/SpeakButton";
@@ -184,9 +186,7 @@ type Entry =
   | { kind: "runStopped"; key: string; ts: number }
   | { kind: "route"; key: string; ts: number; run: RunState }
   | { kind: "changes"; key: string; ts: number; run: RunState }
-  | { kind: "remember"; key: string; ts: number; run: RunState }
-  | { kind: "timeline"; key: string; ts: number; run: RunState }
-  | { kind: "workflow"; key: string; ts: number; run: RunState };
+  | { kind: "timeline"; key: string; ts: number; run: RunState; remember: boolean; workflow: boolean };
 
 /** `idle` = offer the button; `saved` = done; `hidden` = the daemon said no (409). */
 type RememberState = "idle" | "busy" | "saved" | "hidden";
@@ -370,6 +370,23 @@ export function ChatView({
     if (liveChatSlots?.composer) inputRef.current?.focus({ preventScroll: true });
   }, [liveChatSlots?.composer]);
 
+  // Type anywhere in the chat: the first character goes to the composer (nothing else owns the keys).
+  useEffect(() => {
+    const onType = (e: globalThis.KeyboardEvent) => {
+      const el = inputRef.current;
+      const sel = window.getSelection();
+      const ok = shouldTypeToFocus(e, {
+        composerReady: !!el && el.isConnected && !el.disabled && !el.readOnly,
+        dialogOpen: document.querySelector("[role='dialog'], [aria-modal='true'], dialog[open]") !== null,
+        selectionActive: !!sel && !sel.isCollapsed && sel.toString().length > 0
+      });
+      if (ok && el && document.activeElement !== el) {
+        el.focus({ preventScroll: true });
+      }
+    };
+    window.addEventListener("keydown", onType);
+    return () => window.removeEventListener("keydown", onType);
+  }, []);
   useEffect(() => {
     const el = inputRef.current;
     if (el && pendingCaret.current !== null) {
@@ -587,23 +604,10 @@ export function ChatView({
           kind: "timeline",
           key: `${run.id}-timeline`,
           ts: run.finishedMs,
-          run
+          run,
+          remember: canOfferRemember(run) && remember[run.id] !== "hidden",
+          workflow: serverRuns.some((s) => s.id === run.id && s.state === "succeeded" && !s.parent_run_id)
         });
-      }
-      if (
-        run === lastFinished &&
-        canOfferRemember(run) &&
-        remember[run.id] !== "hidden"
-      ) {
-        out.push({
-          kind: "remember",
-          key: `${run.id}-remember`,
-          ts: run.finishedMs ?? run.startedMs,
-          run
-        });
-      }
-      if (run === lastFinished && serverRuns.some(s => s.id === run.id && s.state === "succeeded" && !s.parent_run_id)) {
-        out.push({ kind: "workflow", key: `${run.id}-workflow`, ts: run.finishedMs ?? run.startedMs, run });
       }
     }
     // Array.prototype.sort is stable: equal timestamps keep insertion order.
@@ -616,6 +620,12 @@ export function ChatView({
     });
   }, [messages, chatRuns, showAgentRoute, remember, seenUntilMs, serverRuns, jumpMessageId]);
 
+  const lastActionsKey = useMemo(() => {
+    for (let i = entries.length - 1; i >= 0; i -= 1) {
+      if (entries[i].kind === "timeline") return entries[i].key;
+    }
+    return null;
+  }, [entries]);
   const turn = useMemo(() => lastTurn(messages), [messages]);
   const lastItem = entries[entries.length - 1];
   // The button is the stop button from the moment a message is sent (before any run event) while the box is empty.
@@ -1602,8 +1612,6 @@ export function ChatView({
                   </div>
                 );
               }
-              case "workflow":
-                return client ? <div key={e.key} className={styles.rememberRow}><WorkflowReview client={client} runId={e.run.id} canRemember={true} /></div> : null;
               case "changes": {
                 const restoreSignal = e.run.items.filter(
                   (item) =>
@@ -1621,40 +1629,45 @@ export function ChatView({
                   </div>
                 );
               }
-              case "timeline":
-                return (
-                  <div key={e.key} className={styles.rememberRow}>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      title={t("runReport.hint")}
-                      onClick={() => setTimelineRunId(e.run.id)}
-                      data-testid="run-timeline"
-                    >
-                      <ListOrdered />{t("runReport.button")}
-                    </Button>
-                  </div>
-                );
-              case "remember": {
+              case "timeline": {
                 const st = remember[e.run.id] ?? "idle";
+                const regen = canResend && turn?.answered === true && e.key === lastActionsKey;
                 return (
                   <div key={e.key} className={styles.rememberRow}>
-                    {st === "saved" ? (
-                      <span className={styles.rememberDone} role="status">
-                        {t("chat.remember.saved")}
-                      </span>
-                    ) : (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        disabled={st === "busy"}
-                        title={t("chat.remember.hint")}
-                        onClick={() => void rememberRun(e.run.id)}
-                        data-testid="remember-run"
-                      >
-                        <Bookmark />{t("chat.remember.button")}
-                      </Button>
-                    )}
+                    <RunActionBar label={t("chat.runActions")}>
+                      <IconAction
+                        icon={ListOrdered}
+                        label={t("runReport.button")}
+                        onClick={() => setTimelineRunId(e.run.id)}
+                        testId="run-timeline"
+                      />
+                      {e.remember ? (
+                        st === "saved" ? (
+                          <span className={styles.rememberDone} role="status">
+                            {t("chat.remember.saved")}
+                          </span>
+                        ) : (
+                          <IconAction
+                            icon={Bookmark}
+                            label={t("chat.remember.button")}
+                            disabled={st === "busy"}
+                            onClick={() => void rememberRun(e.run.id)}
+                            testId="remember-run"
+                          />
+                        )
+                      ) : null}
+                      {e.workflow && client ? (
+                        <WorkflowReview client={client} runId={e.run.id} canRemember={true} />
+                      ) : null}
+                      {regen ? (
+                        <RegenerateAction
+                          key={turn?.user.id}
+                          usedWriteTools={turn?.usedWriteTools === true}
+                          busy={resending}
+                          onRegenerate={() => void resendTurn()}
+                        />
+                      ) : null}
+                    </RunActionBar>
                   </div>
                 );
               }
@@ -1680,7 +1693,7 @@ export function ChatView({
                 );
             }
           })}
-          {canResend && turn?.answered ? (
+          {canResend && turn?.answered && lastActionsKey === null ? (
             <RegenerateRow
               key={turn.user.id}
               usedWriteTools={turn.usedWriteTools}
@@ -1914,7 +1927,17 @@ export function ChatView({
               </p>
             </div>
           ) : null}
-          <div className={styles.box}>
+          <div
+            className={styles.box}
+            data-testid="composer-box"
+            onMouseDown={(e) => {
+              // Empty surface: focus the field. Controls and the field itself keep their own behaviour.
+              if (e.button === 0 && shouldFocusOnBoxClick(e.target, e.currentTarget)) {
+                e.preventDefault();
+                inputRef.current?.focus();
+              }
+            }}
+          >
           <ComposerFiles files={files} onRemove={removeFile} />
           <div className={styles.inputWrap}>
           {paintsMentions ? (
@@ -1944,13 +1967,7 @@ export function ChatView({
             aria-activedescendant={
               menuOpen && menuItems.length > 0 ? `${menuId}-${menuActive}` : undefined
             }
-            placeholder={
-              awaitingApproval
-                ? t("chat.placeholderWaiting")
-                : active
-                  ? t("chat.placeholderBusy")
-                  : t("chat.placeholder")
-            }
+            placeholder={t(composerPlaceholderKey({ awaitingApproval, runActive: active }))}
             aria-label={t("chat.placeholder")}
             onChange={(e) => {
               setNav((n) => afterEdit(n, e.target.value));

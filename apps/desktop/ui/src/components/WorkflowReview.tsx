@@ -6,6 +6,7 @@ import type { ApiClient } from "../api/client";
 import { humanLine } from "../lib/humanError";
 import { canOfferWorkflow, EMPTY_REVIEW, reviewReducer } from "../lib/workflowReview";
 import { Modal } from "./Modal";
+import { IconAction } from "./RunActionBar";
 import styles from "./WorkflowReview.module.css";
 
 /** Fetching a proposal never persists it. Only the explicit Save handler writes. */
@@ -30,7 +31,7 @@ export function WorkflowReview({ client, runId, canRemember }: { client: ApiClie
   };
   if (!canRemember) return null;
   if (!state.proposal || !state.draft) return <>
-    <Button size="sm" variant="ghost" disabled={loading} onClick={() => void open()} data-testid="save-workflow"><Workflow />{t("workflow.button")}</Button>
+    <IconAction icon={Workflow} label={t("workflow.button")} disabled={loading} onClick={() => void open()} testId="save-workflow" />
     {loadError && <p role="alert">{loadError}</p>}
   </>;
   const { proposal, draft } = state;
@@ -52,7 +53,7 @@ export function WorkflowReview({ client, runId, canRemember }: { client: ApiClie
   };
   return <>
     {state.phase === "saved" ? <span role="status">{t("workflow.saved")}</span> :
-      <Button size="sm" variant="ghost" onClick={() => dispatch({ type: "open" })} data-testid="save-workflow"><Workflow />{t("workflow.button")}</Button>}
+      <IconAction icon={Workflow} label={t("workflow.button")} onClick={() => dispatch({ type: "open" })} testId="save-workflow" />}
     <Modal open={state.open} onClose={() => dispatch({ type: "close" })} label={t("workflow.title")} size="lg">
       <div className={styles.root}>
         <div className={styles.head}><h2>{t("workflow.title")}</h2><Button size="sm" variant="ghost" disabled={busy} aria-label={t("workflow.cancel")} title={t("workflow.cancel")} onClick={() => dispatch({ type: "close" })}><X /></Button></div>

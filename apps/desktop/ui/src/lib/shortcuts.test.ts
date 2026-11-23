@@ -17,6 +17,7 @@ const lookup = (dict: Record<string, unknown>, key: string) =>
  * handler file either to SHORTCUTS (lib/shortcuts.ts) or here with a reason.
  */
 const LOCAL_ONLY: Record<string, string> = {
+  "lib/composerFocus.ts": "type-to-focus rule: a printable key outside any field focuses the composer (no shortcut)",
   "api/mockLiveView.ts": "mock backend, not a UI shortcut",
   "components/AccountMenu.tsx": "arrow keys inside the account menu (covered by popup menu rows)",
   "components/BotEditorFields.tsx": "Enter inside a single field",

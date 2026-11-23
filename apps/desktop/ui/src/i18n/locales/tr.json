@@ -1574,7 +1574,7 @@
     "pendingElsewhere": "Bu botun başka bir sohbetinden: {{chat}}",
     "pendingPinned": "Kararın bekleniyor. Kart mesaj kutusunun üstünde.",
     "placeholder": "Mesaj yaz…  / komutlar · @ botlar",
-    "placeholderBusy": "Bot çalışıyor. Yazarsan mesaj sıraya girer…",
+    "placeholderBusy": "Bot çalışıyor. Yazarsan mesaj sıraya girer",
     "placeholderWaiting": "Onayını bekliyor. Yazdığın mesaj sıraya girer…",
     "question": {
       "answer": "Yanıtla",
@@ -1610,6 +1610,7 @@
       "toolHint": "Araç ipucu",
       "workflow": "İş akışı: {{name}} (0 LLM çağrısı)"
     },
+    "runActions": "Son yanıt için işlemler",
     "runBar": {
       "elapsed": "{{time}} süredir çalışıyor",
       "forceStop": "Zorla durdur",

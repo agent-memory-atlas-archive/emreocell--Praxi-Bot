@@ -101,6 +101,11 @@ export function RunStatusLine({
           >
             {botName ? `${botName} · ${text}` : text}
           </span>
+          {elapsed ? (
+            <span className={styles.time} aria-hidden="true" title={t("chat.runBar.elapsed", { time: elapsed })}>
+              {elapsed}
+            </span>
+          ) : null}
           <span className={styles.actions}>
             {approval && onJump ? (
               <button type="button" className={styles.link} onClick={onJump} data-testid="show-pending">
@@ -128,11 +133,6 @@ export function RunStatusLine({
               </button>
             ) : null}
           </span>
-          {elapsed ? (
-            <span className={styles.time} aria-hidden="true" title={t("chat.runBar.elapsed", { time: elapsed })}>
-              {elapsed}
-            </span>
-          ) : null}
         </div>
       ) : null}
     </div>

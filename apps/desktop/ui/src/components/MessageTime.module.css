@@ -1,11 +1,10 @@
 .time {
   flex: none;
-  align-self: flex-end;
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
-  background-color: var(--on-wallpaper-fill);
+  align-self: center;
+  padding: var(--space-0);
+  background: none;
   color: var(--on-wallpaper-muted);
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-2xs);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   opacity: 1;

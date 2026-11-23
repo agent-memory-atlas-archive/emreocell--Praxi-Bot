@@ -1574,7 +1574,7 @@
     "pendingElsewhere": "Aus einem anderen Chat dieses Bots: {{chat}}",
     "pendingPinned": "Wartet auf deine Entscheidung. Die Karte steht über dem Nachrichtenfeld.",
     "placeholder": "Nachricht …  / Befehle · @ Bots",
-    "placeholderBusy": "Der Bot arbeitet – einreihen oder lenken …",
+    "placeholderBusy": "Der Bot arbeitet. Deine Nachricht kommt in die Warteschlange",
     "placeholderWaiting": "Wartet auf deine Freigabe. Eine getippte Nachricht wird eingereiht …",
     "question": {
       "answer": "Antworten",
@@ -1610,6 +1610,7 @@
       "toolHint": "Werkzeug-Hinweis",
       "workflow": "Workflow: {{name}} (0 LLM-Aufrufe)"
     },
+    "runActions": "Aktionen für die letzte Antwort",
     "runBar": {
       "elapsed": "Läuft seit {{time}}",
       "forceStop": "Stopp erzwingen",

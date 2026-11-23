@@ -2,6 +2,7 @@ import { ChevronRight, History, Info, RefreshCw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { SupersededGroup } from "../lib/resendTurn";
+import { IconAction, RunActionBar } from "./RunActionBar";
 import styles from "./ResendTurn.module.css";
 
 /** One line before redoing a turn whose run already used tools that act. */
@@ -19,7 +20,7 @@ function ActedNotice() {
  * "Regenerate" under the last answer. Every click is the owner's explicit decision; when the
  * previous run used tools that act, it first asks once more with the one-line warning.
  */
-export function RegenerateRow({
+export function RegenerateAction({
   usedWriteTools,
   busy,
   onRegenerate
@@ -35,33 +36,56 @@ export function RegenerateRow({
       setConfirming(false);
     }
   }, [busy]);
+  const label = t(confirming ? "chat.resend.regenerateAnyway" : "chat.resend.regenerate");
   return (
-    <div className={styles.regenRow} data-testid="regenerate-row">
+    <>
       {confirming ? <ActedNotice /> : null}
-      <div className={styles.buttons}>
-        <button
-          type="button"
-          className={`${styles.action} ${confirming ? styles.primary : ""}`}
-          disabled={busy}
-          data-testid="regenerate"
-          onClick={() => {
-            if (usedWriteTools && !confirming) {
-              setConfirming(true);
-              return;
-            }
-            setConfirming(false);
-            onRegenerate();
-          }}
-        >
-          <RefreshCw aria-hidden="true" />
-          {t(confirming ? "chat.resend.regenerateAnyway" : "chat.resend.regenerate")}
-        </button>
-        {confirming ? (
+      {confirming ? (
+        <>
+          <button
+            type="button"
+            className={`${styles.action} ${styles.primary}`}
+            disabled={busy}
+            data-testid="regenerate"
+            onClick={() => {
+              setConfirming(false);
+              onRegenerate();
+            }}
+          >
+            <RefreshCw aria-hidden="true" />
+            {label}
+          </button>
           <button type="button" className={styles.action} onClick={() => setConfirming(false)}>
             {t("chat.resend.cancel")}
           </button>
-        ) : null}
-      </div>
+        </>
+      ) : (
+        <IconAction
+          icon={RefreshCw}
+          label={label}
+          disabled={busy}
+          testId="regenerate"
+          onClick={() => {
+            if (usedWriteTools) {
+              setConfirming(true);
+              return;
+            }
+            onRegenerate();
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+/** Standalone bar, for a last answer without a finished-run action row. */
+export function RegenerateRow(props: { usedWriteTools: boolean; busy: boolean; onRegenerate: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <div data-testid="regenerate-row">
+      <RunActionBar label={t("chat.runActions")}>
+        <RegenerateAction {...props} />
+      </RunActionBar>
     </div>
   );
 }
